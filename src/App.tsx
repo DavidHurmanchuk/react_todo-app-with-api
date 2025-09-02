@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useEffect,
   useRef,
@@ -56,6 +54,7 @@ export const App: React.FC = () => {
     (async () => {
       try {
         const list = await getTodos();
+
         setTodos(list);
       } catch {
         setError(ErrorMessage.Load);
@@ -66,6 +65,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => setError(''), 3000);
+
       return () => clearTimeout(timer);
     }
   }, [error]);
@@ -75,6 +75,7 @@ export const App: React.FC = () => {
       e.preventDefault();
       if (!newTitle.trim()) {
         setError(ErrorMessage.Empty);
+
         return;
       }
 
@@ -90,6 +91,7 @@ export const App: React.FC = () => {
       try {
         setInputDisabled(true);
         const saved = await addTodos(newTodo);
+
         setTodos(prev => [...prev, saved]);
         setNewTitle('');
       } catch {
@@ -109,9 +111,11 @@ export const App: React.FC = () => {
     try {
       await deleteTodos(id);
       setTodos(prev => prev.filter(todo => todo.id !== id));
+
       return true;
     } catch {
       setError(ErrorMessage.Delete);
+
       return false;
     } finally {
       setPendingIds(prev => prev.filter(todoId => todoId !== id));
@@ -123,10 +127,13 @@ export const App: React.FC = () => {
     setPendingIds(prev => [...prev, id]);
     try {
       const updated = await updateTodos(id, data);
+
       setTodos(prev => prev.map(todo => (todo.id === id ? updated : todo)));
+
       return true;
     } catch {
       setError(ErrorMessage.Update);
+
       return false;
     } finally {
       setPendingIds(prev => prev.filter(todoId => todoId !== id));
@@ -137,7 +144,9 @@ export const App: React.FC = () => {
     const completed = todos.filter(t => t.completed);
     const ids = completed.map(t => t.id);
 
-    if (!ids.length) return;
+    if (!ids.length) {
+      return;
+    }
 
     setPendingIds(prev => [...prev, ...ids]);
     try {
@@ -172,9 +181,13 @@ export const App: React.FC = () => {
   const handleToggleAll = useCallback(async () => {
     const target = !allCompleted;
     const toUpdate = todos.filter(t => t.completed !== target);
-    if (!toUpdate.length) return;
+
+    if (!toUpdate.length) {
+      return;
+    }
 
     const ids = toUpdate.map(t => t.id);
+
     setPendingIds(prev => [...prev, ...ids]);
 
     try {
@@ -196,13 +209,21 @@ export const App: React.FC = () => {
   const handleSave = useCallback(
     async (id: number, newValue: string, oldValue: string) => {
       const trimmed = newValue.trim();
+
       if (!trimmed) {
         const removed = await handleDelete(id);
-        if (!removed) return;
+
+        if (!removed) {
+          return;
+        }
       } else if (trimmed !== oldValue) {
         const ok = await handleUpdate(id, { title: trimmed });
-        if (!ok) return;
+
+        if (!ok) {
+          return;
+        }
       }
+
       setEditId(null);
     },
     [handleDelete, handleUpdate],
@@ -212,18 +233,25 @@ export const App: React.FC = () => {
     async (e: React.FormEvent<HTMLFormElement>, id: number, old: string) => {
       e.preventDefault();
       const input = e.currentTarget.elements[0] as HTMLInputElement;
+
       await handleSave(id, input.value, old);
     },
     [handleSave],
   );
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape') setEditId(null);
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      e.currentTarget.blur();
-    }
-  }, []);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Escape') {
+        setEditId(null);
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        e.currentTarget.blur();
+      }
+    },
+    [],
+  );
 
   const renderTodos = useMemo(
     () => (draftTodo ? [...todos, draftTodo] : todos),
@@ -237,7 +265,9 @@ export const App: React.FC = () => {
 
   const activeItems = useMemo(() => todos.filter(t => !t.completed), [todos]);
 
-  if (!USER_ID) return <UserWarning />;
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
 
   return (
     <div className="todoapp">

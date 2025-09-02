@@ -10,7 +10,11 @@ type Props = {
   onDelete: (id: number) => Promise<boolean>;
   onEdit: (id: number) => void;
   onSave: (id: number, newValue: string, oldValue: string) => Promise<void>;
-  onFormSave: (e: React.FormEvent<HTMLFormElement>, id: number, old: string) => Promise<void>;
+  onFormSave: (
+    e: React.FormEvent<HTMLFormElement>,
+    id: number,
+    old: string,
+  ) => Promise<void>;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
